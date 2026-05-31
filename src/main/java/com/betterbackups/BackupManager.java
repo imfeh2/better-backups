@@ -99,6 +99,10 @@ public final class BackupManager {
 		return new BackupRepository(resolveBackupDirectory(settingsStore.load())).requireBackup(name);
 	}
 
+	public BackupEntry requireLatestBackup() throws IOException {
+		return new BackupRepository(resolveBackupDirectory(settingsStore.load())).requireLatestBackup();
+	}
+
 	public void applyPendingRestoreBeforeServerStart() throws IOException {
 		BackupSettings settings = settingsStore.load();
 		pendingRestoreService.applyPendingRestore(settingsStore, resolveWorldDirectory(), resolveBackupDirectory(settings));

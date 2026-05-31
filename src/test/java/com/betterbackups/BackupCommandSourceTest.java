@@ -16,6 +16,8 @@ class BackupCommandSourceTest {
 		assertTrue(source.contains("literal(\"delete\")"));
 		assertTrue(source.contains("/backup cleanup"));
 		assertTrue(source.contains("/backup delete"));
+		assertTrue(source.contains("literal(\"latest\")"));
+		assertTrue(source.contains("/backup restore latest"));
 		assertTrue(source.contains("literal(\"cleanup-confirm\")"));
 		assertTrue(source.contains("/backup set cleanup-confirm"));
 		assertFalse(source.contains("literal(\"clear\")"));

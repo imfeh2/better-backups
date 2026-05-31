@@ -61,6 +61,8 @@ public final class BackupCommand {
 				.executes(BackupCommand::clearBackups)
 				.then(literal("confirm").executes(BackupCommand::confirmClearBackups)))
 			.then(literal("restore")
+				.executes(BackupCommand::restoreLatestBackup)
+				.then(literal("latest").executes(BackupCommand::restoreLatestBackup))
 				.then(literal("cancel").executes(BackupCommand::cancelRestore))
 				.then(argument("backup", StringArgumentType.word())
 					.suggests(BACKUP_SUGGESTIONS)
@@ -205,6 +207,27 @@ public final class BackupCommand {
 		BackupSettings settings = loadSettingsOrDefault(BetterBackupsMod.manager());
 		try {
 			String backupName = StringArgumentType.getString(context, "backup");
+			if ("latest".equals(backupName)) {
+				backupName = BetterBackupsMod.manager().requireLatestBackup().name();
+			}
+			return restoreBackup(context, backupName, settings);
+		} catch (Exception exception) {
+			return showRestoreError(context, settings, exception, StringArgumentType.getString(context, "backup"));
+		}
+	}
+
+	private static int restoreLatestBackup(CommandContext<CommandSourceStack> context) {
+		BackupSettings settings = loadSettingsOrDefault(BetterBackupsMod.manager());
+		try {
+			String backupName = BetterBackupsMod.manager().requireLatestBackup().name();
+			return restoreBackup(context, backupName, settings);
+		} catch (Exception exception) {
+			return showRestoreError(context, settings, exception, "latest");
+		}
+	}
+
+	private static int restoreBackup(CommandContext<CommandSourceStack> context, String backupName, BackupSettings settings) {
+		try {
 			BackupManager manager = BetterBackupsMod.manager();
 			settings = manager.loadSettings();
 			if (settings.shouldDelayRestore()) {
@@ -229,15 +252,19 @@ public final class BackupCommand {
 			}
 			return 1;
 		} catch (Exception exception) {
-			if (exception instanceof BackupManager.RestoreAlreadyRunningException) {
-				BackupMessenger.error(context.getSource(), settings, "restore.alreadyRunning");
-			} else if (exception instanceof IllegalArgumentException) {
-				BackupMessenger.error(context.getSource(), settings, "backup.notFound", StringArgumentType.getString(context, "backup"));
-			} else {
-				BackupMessenger.error(context.getSource(), settings, "restore.prepareFailed", exception.getMessage());
-			}
-			return 0;
+			return showRestoreError(context, settings, exception, backupName);
 		}
+	}
+
+	private static int showRestoreError(CommandContext<CommandSourceStack> context, BackupSettings settings, Exception exception, String backupName) {
+		if (exception instanceof BackupManager.RestoreAlreadyRunningException) {
+			BackupMessenger.error(context.getSource(), settings, "restore.alreadyRunning");
+		} else if (exception instanceof IllegalArgumentException) {
+			BackupMessenger.error(context.getSource(), settings, "backup.notFound", backupName);
+		} else {
+			BackupMessenger.error(context.getSource(), settings, "restore.prepareFailed", exception.getMessage());
+		}
+		return 0;
 	}
 
 	private static int cancelRestore(CommandContext<CommandSourceStack> context) {
@@ -277,6 +304,8 @@ public final class BackupCommand {
 		BackupSettings settings = loadSettingsOrDefault(BetterBackupsMod.manager());
 		BackupMessenger.info(context.getSource(), settings, "menu.title");
 		BackupMessenger.line(context.getSource(), BackupMessenger.commandButton(settings, "menu.start", "/backup start", "menu.start.hover")
+			.append(space())
+			.append(BackupMessenger.commandButton(settings, "menu.restoreLatest", "/backup restore latest", "menu.restoreLatest.hover"))
 			.append(space())
 			.append(BackupMessenger.commandButton(settings, "menu.backups", "/backup menu backups", "menu.backups.hover"))
 			.append(space())
@@ -382,6 +411,7 @@ public final class BackupCommand {
 		BackupMessenger.item(context.getSource(), BackupHelp.editable(settings, "/backup delete <backup>", "/backup delete ", "help.delete.description"));
 		BackupMessenger.item(context.getSource(), BackupHelp.runnable(settings, "/backup cleanup", "help.clear.description"));
 		BackupMessenger.item(context.getSource(), BackupHelp.editable(settings, "/backup cleanup confirm", "/backup cleanup confirm", "help.cleanupConfirmCommand.description"));
+		BackupMessenger.item(context.getSource(), BackupHelp.runnable(settings, "/backup restore latest", "help.restoreLatest.description"));
 		BackupMessenger.item(context.getSource(), BackupHelp.editable(settings, "/backup restore <backup>", "/backup restore ", "help.restore.description"));
 		BackupMessenger.item(context.getSource(), BackupHelp.runnable(settings, "/backup restore cancel", "help.restoreCancel.description"));
 

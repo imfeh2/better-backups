@@ -27,4 +27,17 @@ class BackupRepositoryDeleteTest {
 		assertTrue(Files.exists(backupDir.resolve("2026-05-29_11-00-00.zip")));
 		assertFalse(Files.exists(backupDir.resolve("2026-05-29_10-00-00.zip")));
 	}
+
+	@Test
+	void requiresLatestBackupByListOrder() throws Exception {
+		Path backupDir = tempDir.resolve("backups");
+		Files.createDirectories(backupDir);
+		Files.writeString(backupDir.resolve("2026-05-29_10-00-00.zip"), "old");
+		Files.writeString(backupDir.resolve("2026-05-29_11-00-00.zip"), "new");
+		BackupRepository repository = new BackupRepository(backupDir);
+
+		BackupEntry latest = repository.requireLatestBackup();
+
+		assertEquals("2026-05-29_11-00-00", latest.name());
+	}
 }
