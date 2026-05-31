@@ -25,6 +25,7 @@ All commands require server owner permission.
 /backup                    Open the clickable backup menu.
 /backup start              Create a backup now.
 /backup list               Show available backups.
+/backup delete <backup>    Delete one backup immediately.
 /backup restore <backup>   Restore a backup.
 /backup restore cancel     Cancel a pending restore.
 /backup cleanup            Delete all backups after confirmation.

@@ -179,10 +179,21 @@ public final class BackupManager {
 		return new BackupRepository(resolveBackupDirectory(settingsStore.load())).clearBackups();
 	}
 
+	public void deleteBackup(String name) throws IOException {
+		requireCanDeleteBackup();
+		new BackupRepository(resolveBackupDirectory(settingsStore.load())).deleteBackup(name);
+	}
+
 	public void requireCanClearBackups() {
 		if (backupRunning.get()) {
 			throw new BackupAlreadyRunningException();
 		}
+		if (restoreRunning.get()) {
+			throw new RestoreAlreadyRunningException();
+		}
+	}
+
+	public void requireCanDeleteBackup() {
 		if (restoreRunning.get()) {
 			throw new RestoreAlreadyRunningException();
 		}

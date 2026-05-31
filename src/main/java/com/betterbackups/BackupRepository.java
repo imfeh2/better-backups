@@ -36,6 +36,11 @@ public final class BackupRepository {
 			.orElseThrow(() -> new IllegalArgumentException("Backup not found: " + name));
 	}
 
+	public void deleteBackup(String name) throws IOException {
+		BackupEntry backup = requireBackup(name);
+		Files.deleteIfExists(backup.path());
+	}
+
 	public void keepNewest(int count) throws IOException {
 		List<BackupEntry> entries = listBackups();
 		for (int index = count; index < entries.size(); index++) {

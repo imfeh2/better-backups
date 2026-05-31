@@ -53,6 +53,10 @@ public final class BackupCommand {
 			.executes(BackupCommand::menu)
 			.then(literal("start").executes(BackupCommand::createBackup))
 			.then(literal("list").executes(BackupCommand::listBackups))
+			.then(literal("delete")
+				.then(argument("backup", StringArgumentType.word())
+					.suggests(BACKUP_SUGGESTIONS)
+					.executes(BackupCommand::deleteBackup)))
 			.then(literal("cleanup")
 				.executes(BackupCommand::clearBackups)
 				.then(literal("confirm").executes(BackupCommand::confirmClearBackups)))
@@ -139,6 +143,30 @@ public final class BackupCommand {
 			return entries.size();
 		} catch (Exception exception) {
 			BackupMessenger.error(context.getSource(), settings, "backup.listFailed", exception.getMessage());
+			return 0;
+		}
+	}
+
+	private static int deleteBackup(CommandContext<CommandSourceStack> context) {
+		BackupSettings settings = loadSettingsOrDefault(BetterBackupsMod.manager());
+		try {
+			BackupManager manager = BetterBackupsMod.manager();
+			settings = manager.loadSettings();
+			manager.requireCanDeleteBackup();
+			String backupName = StringArgumentType.getString(context, "backup");
+			manager.deleteBackup(backupName);
+			BackupMessenger.success(context.getSource(), settings, "backup.deleted", true, backupName);
+			return 1;
+		} catch (Exception exception) {
+			if (exception instanceof BackupManager.BackupAlreadyRunningException) {
+				BackupMessenger.error(context.getSource(), settings, "backup.alreadyRunning");
+			} else if (exception instanceof BackupManager.RestoreAlreadyRunningException) {
+				BackupMessenger.error(context.getSource(), settings, "restore.alreadyRunning");
+			} else if (exception instanceof IllegalArgumentException) {
+				BackupMessenger.error(context.getSource(), settings, "backup.notFound", StringArgumentType.getString(context, "backup"));
+			} else {
+				BackupMessenger.error(context.getSource(), settings, "backup.deleteFailed", exception.getMessage());
+			}
 			return 0;
 		}
 	}
@@ -269,7 +297,9 @@ public final class BackupCommand {
 				for (BackupEntry entry : entries) {
 					BackupMessenger.item(context.getSource(), BackupMessenger.value(entry.name())
 						.append(BackupMessenger.muted(" (" + formatBytes(entry.sizeBytes()) + ") "))
-						.append(BackupMessenger.commandButton(settings, "menu.restore", "/backup restore " + entry.name(), "menu.restore.hover")));
+						.append(BackupMessenger.commandButton(settings, "menu.restore", "/backup restore " + entry.name(), "menu.restore.hover"))
+						.append(space())
+						.append(BackupMessenger.commandButton(settings, "menu.delete", "/backup delete " + entry.name(), "menu.delete.hover")));
 				}
 			}
 			BackupMessenger.line(context.getSource(), BackupMessenger.commandButton(settings, "menu.clear", "/backup cleanup", "menu.clear.hover")
@@ -349,6 +379,7 @@ public final class BackupCommand {
 		BackupMessenger.item(context.getSource(), BackupHelp.runnable(settings, "/backup start", "help.start.description"));
 		BackupMessenger.item(context.getSource(), BackupHelp.runnable(settings, "/backup menu", "help.menu.description"));
 		BackupMessenger.item(context.getSource(), BackupHelp.runnable(settings, "/backup list", "help.list.description"));
+		BackupMessenger.item(context.getSource(), BackupHelp.editable(settings, "/backup delete <backup>", "/backup delete ", "help.delete.description"));
 		BackupMessenger.item(context.getSource(), BackupHelp.runnable(settings, "/backup cleanup", "help.clear.description"));
 		BackupMessenger.item(context.getSource(), BackupHelp.editable(settings, "/backup cleanup confirm", "/backup cleanup confirm", "help.cleanupConfirmCommand.description"));
 		BackupMessenger.item(context.getSource(), BackupHelp.editable(settings, "/backup restore <backup>", "/backup restore ", "help.restore.description"));

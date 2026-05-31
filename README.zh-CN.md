@@ -25,6 +25,7 @@
 /backup                    打开可点击的备份菜单。
 /backup start              立即创建备份。
 /backup list               显示可用备份。
+/backup delete <backup>    立即删除一个备份。
 /backup restore <backup>   恢复指定备份。
 /backup restore cancel     取消等待中的恢复操作。
 /backup cleanup            确认后删除所有备份。

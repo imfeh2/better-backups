@@ -13,12 +13,22 @@ class BackupCommandSourceTest {
 		String source = Files.readString(Path.of("src/main/java/com/betterbackups/BackupCommand.java"));
 
 		assertTrue(source.contains("literal(\"cleanup\")"));
+		assertTrue(source.contains("literal(\"delete\")"));
 		assertTrue(source.contains("/backup cleanup"));
+		assertTrue(source.contains("/backup delete"));
 		assertTrue(source.contains("literal(\"cleanup-confirm\")"));
 		assertTrue(source.contains("/backup set cleanup-confirm"));
 		assertFalse(source.contains("literal(\"clear\")"));
 		assertFalse(source.contains("/backup clear"));
 		assertFalse(source.contains("literal(\"clear-confirm\")"));
 		assertFalse(source.contains("/backup set clear-confirm"));
+	}
+
+	@Test
+	void deleteCommandDoesNotUseCleanupProtection() throws Exception {
+		String source = Files.readString(Path.of("src/main/java/com/betterbackups/BackupCommand.java"));
+
+		assertTrue(source.contains("manager.requireCanDeleteBackup()"));
+		assertFalse(source.contains("manager.requireCanClearBackups();\n\t\t\tString backupName = StringArgumentType.getString(context, \"backup\");"));
 	}
 }
