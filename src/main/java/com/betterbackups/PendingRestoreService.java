@@ -26,7 +26,7 @@ public final class PendingRestoreService {
 		String backupName = settings.pendingRestore();
 		BetterBackupsMod.LOGGER.info("Restoring backup {} into {}", backupName, worldDirectory);
 		BackupEntry backup = new BackupRepository(backupDirectory).requireBackup(backupName);
-		Path previousWorld = worldDirectory.resolveSibling(worldDirectory.getFileName() + ".before-restore-" + BackupTimeNames.now(clock));
+		Path previousWorld = worldDirectory.resolveSibling(worldDirectory.getFileName() + ".better-backups-restore-" + BackupTimeNames.now(clock));
 		if (Files.exists(worldDirectory)) {
 			Files.move(worldDirectory, previousWorld, StandardCopyOption.ATOMIC_MOVE);
 		}
@@ -34,6 +34,9 @@ public final class PendingRestoreService {
 		try {
 			archiveService.restore(backup.path(), worldDirectory);
 			settingsStore.save(settings.withoutPendingRestore());
+			if (Files.exists(previousWorld)) {
+				deleteRecursively(previousWorld);
+			}
 			BetterBackupsMod.LOGGER.info("Restore completed: {}", backupName);
 			return true;
 		} catch (IOException exception) {

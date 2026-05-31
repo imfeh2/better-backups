@@ -35,8 +35,31 @@ class PendingRestoreServiceTest {
 
 		assertTrue(restored);
 		assertEquals("restored", Files.readString(world.resolve("level.dat")));
-		assertEquals("current", Files.readString(tempDir.resolve("world.before-restore-2026-05-29_15-06-37").resolve("level.dat")));
+		assertFalse(Files.exists(tempDir.resolve("world.before-restore-2026-05-29_15-06-37")));
+		assertFalse(Files.exists(tempDir.resolve("world.better-backups-restore-2026-05-29_15-06-37")));
 		assertTrue(settingsStore.load().pendingRestore().isBlank());
+	}
+
+	@Test
+	void rollsBackWorldWhenRestoreFails() throws Exception {
+		Clock clock = Clock.fixed(Instant.parse("2026-05-29T15:06:37Z"), ZoneOffset.UTC);
+		Path backups = tempDir.resolve("backups");
+		Files.createDirectories(backups);
+		Files.writeString(backups.resolve("broken.zip"), "not a zip");
+		Path world = tempDir.resolve("world");
+		Files.createDirectories(world);
+		Files.writeString(world.resolve("level.dat"), "current");
+		BackupSettingsStore settingsStore = new BackupSettingsStore(tempDir.resolve("better-backups.json"));
+		settingsStore.save(BackupSettings.defaults().withPendingRestore("broken"));
+		PendingRestoreService service = new PendingRestoreService(new BackupArchiveService(clock), clock);
+
+		try {
+			service.applyPendingRestore(settingsStore, world, backups);
+		} catch (Exception ignored) {
+		}
+
+		assertEquals("current", Files.readString(world.resolve("level.dat")));
+		assertFalse(Files.exists(tempDir.resolve("world.better-backups-restore-2026-05-29_15-06-37")));
 	}
 
 	@Test
