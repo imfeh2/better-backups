@@ -27,7 +27,7 @@
 /backup list               显示可用备份。
 /backup restore <backup>   恢复指定备份。
 /backup restore cancel     取消等待中的恢复操作。
-/backup clear              确认后删除所有备份。
+/backup cleanup            确认后删除所有备份。
 /backup status             显示当前备份状态。
 /backup config             显示当前设置。
 /backup help               显示命令帮助。

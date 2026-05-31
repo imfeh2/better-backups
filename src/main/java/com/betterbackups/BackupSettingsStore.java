@@ -52,7 +52,7 @@ public final class BackupSettingsStore {
 		String scheduleTrigger = normalizeScheduleTrigger(settings.scheduleTrigger());
 		String scheduleCron = normalizeScheduleCron(settings.scheduleCron());
 		String pendingRestore = settings.pendingRestore() == null ? "" : settings.pendingRestore();
-		return new BackupSettings(settings.scheduleEnabled(), intervalMinutes, backupsToKeep, backupDirectory, settings.shouldStopAfterRestore(), settings.shouldConfirmBeforeClear(), settings.shouldWarnBeforeScheduledBackup(), scheduleWarningSeconds, settings.shouldDelayRestore(), restoreDelaySeconds, language, scheduleMode, scheduleTrigger, scheduleCron, pendingRestore);
+		return new BackupSettings(settings.scheduleEnabled(), intervalMinutes, backupsToKeep, backupDirectory, settings.shouldStopAfterRestore(), settings.shouldConfirmBeforeCleanup(), settings.shouldWarnBeforeScheduledBackup(), scheduleWarningSeconds, settings.shouldDelayRestore(), restoreDelaySeconds, language, scheduleMode, scheduleTrigger, scheduleCron, pendingRestore);
 	}
 
 	private boolean isBlank(String value) {

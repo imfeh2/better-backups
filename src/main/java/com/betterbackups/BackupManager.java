@@ -166,8 +166,8 @@ public final class BackupManager {
 		settingsStore.save(settingsStore.load().withStopAfterRestore(enabled));
 	}
 
-	public void setClearRequiresConfirm(boolean enabled) throws IOException {
-		settingsStore.save(settingsStore.load().withClearRequiresConfirm(enabled));
+	public void setCleanupRequiresConfirm(boolean enabled) throws IOException {
+		settingsStore.save(settingsStore.load().withCleanupRequiresConfirm(enabled));
 	}
 
 	public void setLanguage(String language) throws IOException {

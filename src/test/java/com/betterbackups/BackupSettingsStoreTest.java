@@ -24,7 +24,7 @@ class BackupSettingsStoreTest {
 		assertEquals(10, settings.backupsToKeep());
 		assertEquals("backups", settings.backupDirectory());
 		assertTrue(settings.shouldStopAfterRestore());
-		assertTrue(settings.shouldConfirmBeforeClear());
+		assertTrue(settings.shouldConfirmBeforeCleanup());
 		assertTrue(settings.shouldWarnBeforeScheduledBackup());
 		assertEquals(30, settings.scheduleWarningSeconds());
 		assertTrue(settings.shouldDelayRestore());
@@ -47,6 +47,17 @@ class BackupSettingsStoreTest {
 	}
 
 	@Test
+	void savesCleanupConfirmationFieldName() throws Exception {
+		BackupSettingsStore store = new BackupSettingsStore(tempDir.resolve("better-backups.json"));
+
+		store.save(BackupSettings.defaults());
+
+		String content = Files.readString(tempDir.resolve("better-backups.json"));
+		assertTrue(content.contains("\"cleanupRequiresConfirm\""));
+		assertFalse(content.contains("\"clearRequiresConfirm\""));
+	}
+
+	@Test
 	void missingStopAfterRestoreDefaultsToEnabled() throws Exception {
 		Path config = tempDir.resolve("better-backups.json");
 		Files.writeString(config, """
@@ -66,7 +77,7 @@ class BackupSettingsStoreTest {
 	}
 
 	@Test
-	void missingClearConfirmationDefaultsToEnabled() throws Exception {
+	void missingCleanupConfirmationDefaultsToEnabled() throws Exception {
 		Path config = tempDir.resolve("better-backups.json");
 		Files.writeString(config, """
 			{
@@ -82,7 +93,7 @@ class BackupSettingsStoreTest {
 
 		BackupSettings settings = store.load();
 
-		assertTrue(settings.shouldConfirmBeforeClear());
+		assertTrue(settings.shouldConfirmBeforeCleanup());
 	}
 
 	@Test
@@ -95,7 +106,7 @@ class BackupSettingsStoreTest {
 			  "backupsToKeep": 10,
 			  "backupDirectory": "backups",
 			  "stopAfterRestore": true,
-			  "clearRequiresConfirm": true,
+			  "cleanupRequiresConfirm": true,
 			  "pendingRestore": ""
 			}
 			""");
@@ -117,7 +128,7 @@ class BackupSettingsStoreTest {
 			  "backupsToKeep": 10,
 			  "backupDirectory": "backups",
 			  "stopAfterRestore": true,
-			  "clearRequiresConfirm": true,
+			  "cleanupRequiresConfirm": true,
 			  "scheduleWarningEnabled": true,
 			  "scheduleWarningSeconds": 30,
 			  "pendingRestore": ""
@@ -141,7 +152,7 @@ class BackupSettingsStoreTest {
 			  "backupsToKeep": 10,
 			  "backupDirectory": "backups",
 			  "stopAfterRestore": true,
-			  "clearRequiresConfirm": true,
+			  "cleanupRequiresConfirm": true,
 			  "scheduleWarningEnabled": true,
 			  "scheduleWarningSeconds": 30,
 			  "restoreDelayEnabled": true,
@@ -166,7 +177,7 @@ class BackupSettingsStoreTest {
 			  "backupsToKeep": 10,
 			  "backupDirectory": "backups",
 			  "stopAfterRestore": true,
-			  "clearRequiresConfirm": true,
+			  "cleanupRequiresConfirm": true,
 			  "scheduleWarningEnabled": true,
 			  "scheduleWarningSeconds": 30,
 			  "restoreDelayEnabled": true,
@@ -192,7 +203,7 @@ class BackupSettingsStoreTest {
 			  "backupsToKeep": 10,
 			  "backupDirectory": "backups",
 			  "stopAfterRestore": true,
-			  "clearRequiresConfirm": true,
+			  "cleanupRequiresConfirm": true,
 			  "scheduleWarningEnabled": true,
 			  "scheduleWarningSeconds": 30,
 			  "restoreDelayEnabled": true,
@@ -219,7 +230,7 @@ class BackupSettingsStoreTest {
 			  "backupsToKeep": 10,
 			  "backupDirectory": "backups",
 			  "stopAfterRestore": true,
-			  "clearRequiresConfirm": true,
+			  "cleanupRequiresConfirm": true,
 			  "scheduleWarningEnabled": true,
 			  "scheduleWarningSeconds": 30,
 			  "restoreDelayEnabled": true,

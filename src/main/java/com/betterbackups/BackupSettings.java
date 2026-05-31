@@ -6,7 +6,7 @@ public record BackupSettings(
 	int backupsToKeep,
 	String backupDirectory,
 	Boolean stopAfterRestore,
-	Boolean clearRequiresConfirm,
+	Boolean cleanupRequiresConfirm,
 	Boolean scheduleWarningEnabled,
 	long scheduleWarningSeconds,
 	Boolean restoreDelayEnabled,
@@ -30,55 +30,55 @@ public record BackupSettings(
 	}
 
 	public BackupSettings withScheduleEnabled(boolean enabled) {
-		return new BackupSettings(enabled, intervalMinutes, backupsToKeep, backupDirectory, stopAfterRestore, clearRequiresConfirm, scheduleWarningEnabled, scheduleWarningSeconds, restoreDelayEnabled, restoreDelaySeconds, language, scheduleMode, scheduleTrigger, scheduleCron, pendingRestore);
+		return new BackupSettings(enabled, intervalMinutes, backupsToKeep, backupDirectory, stopAfterRestore, cleanupRequiresConfirm, scheduleWarningEnabled, scheduleWarningSeconds, restoreDelayEnabled, restoreDelaySeconds, language, scheduleMode, scheduleTrigger, scheduleCron, pendingRestore);
 	}
 
 	public BackupSettings withIntervalMinutes(long minutes) {
-		return new BackupSettings(scheduleEnabled, minutes, backupsToKeep, backupDirectory, stopAfterRestore, clearRequiresConfirm, scheduleWarningEnabled, scheduleWarningSeconds, restoreDelayEnabled, restoreDelaySeconds, language, scheduleMode, "every", scheduleCron, pendingRestore);
+		return new BackupSettings(scheduleEnabled, minutes, backupsToKeep, backupDirectory, stopAfterRestore, cleanupRequiresConfirm, scheduleWarningEnabled, scheduleWarningSeconds, restoreDelayEnabled, restoreDelaySeconds, language, scheduleMode, "every", scheduleCron, pendingRestore);
 	}
 
 	public BackupSettings withBackupsToKeep(int count) {
-		return new BackupSettings(scheduleEnabled, intervalMinutes, count, backupDirectory, stopAfterRestore, clearRequiresConfirm, scheduleWarningEnabled, scheduleWarningSeconds, restoreDelayEnabled, restoreDelaySeconds, language, scheduleMode, scheduleTrigger, scheduleCron, pendingRestore);
+		return new BackupSettings(scheduleEnabled, intervalMinutes, count, backupDirectory, stopAfterRestore, cleanupRequiresConfirm, scheduleWarningEnabled, scheduleWarningSeconds, restoreDelayEnabled, restoreDelaySeconds, language, scheduleMode, scheduleTrigger, scheduleCron, pendingRestore);
 	}
 
 	public BackupSettings withStopAfterRestore(boolean enabled) {
-		return new BackupSettings(scheduleEnabled, intervalMinutes, backupsToKeep, backupDirectory, enabled, clearRequiresConfirm, scheduleWarningEnabled, scheduleWarningSeconds, restoreDelayEnabled, restoreDelaySeconds, language, scheduleMode, scheduleTrigger, scheduleCron, pendingRestore);
+		return new BackupSettings(scheduleEnabled, intervalMinutes, backupsToKeep, backupDirectory, enabled, cleanupRequiresConfirm, scheduleWarningEnabled, scheduleWarningSeconds, restoreDelayEnabled, restoreDelaySeconds, language, scheduleMode, scheduleTrigger, scheduleCron, pendingRestore);
 	}
 
-	public BackupSettings withClearRequiresConfirm(boolean enabled) {
+	public BackupSettings withCleanupRequiresConfirm(boolean enabled) {
 		return new BackupSettings(scheduleEnabled, intervalMinutes, backupsToKeep, backupDirectory, stopAfterRestore, enabled, scheduleWarningEnabled, scheduleWarningSeconds, restoreDelayEnabled, restoreDelaySeconds, language, scheduleMode, scheduleTrigger, scheduleCron, pendingRestore);
 	}
 
 	public BackupSettings withScheduleWarningEnabled(boolean enabled) {
-		return new BackupSettings(scheduleEnabled, intervalMinutes, backupsToKeep, backupDirectory, stopAfterRestore, clearRequiresConfirm, enabled, scheduleWarningSeconds, restoreDelayEnabled, restoreDelaySeconds, language, scheduleMode, scheduleTrigger, scheduleCron, pendingRestore);
+		return new BackupSettings(scheduleEnabled, intervalMinutes, backupsToKeep, backupDirectory, stopAfterRestore, cleanupRequiresConfirm, enabled, scheduleWarningSeconds, restoreDelayEnabled, restoreDelaySeconds, language, scheduleMode, scheduleTrigger, scheduleCron, pendingRestore);
 	}
 
 	public BackupSettings withScheduleWarningSeconds(long seconds) {
-		return new BackupSettings(scheduleEnabled, intervalMinutes, backupsToKeep, backupDirectory, stopAfterRestore, clearRequiresConfirm, scheduleWarningEnabled, seconds, restoreDelayEnabled, restoreDelaySeconds, language, scheduleMode, scheduleTrigger, scheduleCron, pendingRestore);
+		return new BackupSettings(scheduleEnabled, intervalMinutes, backupsToKeep, backupDirectory, stopAfterRestore, cleanupRequiresConfirm, scheduleWarningEnabled, seconds, restoreDelayEnabled, restoreDelaySeconds, language, scheduleMode, scheduleTrigger, scheduleCron, pendingRestore);
 	}
 
 	public BackupSettings withRestoreDelayEnabled(boolean enabled) {
-		return new BackupSettings(scheduleEnabled, intervalMinutes, backupsToKeep, backupDirectory, stopAfterRestore, clearRequiresConfirm, scheduleWarningEnabled, scheduleWarningSeconds, enabled, restoreDelaySeconds, language, scheduleMode, scheduleTrigger, scheduleCron, pendingRestore);
+		return new BackupSettings(scheduleEnabled, intervalMinutes, backupsToKeep, backupDirectory, stopAfterRestore, cleanupRequiresConfirm, scheduleWarningEnabled, scheduleWarningSeconds, enabled, restoreDelaySeconds, language, scheduleMode, scheduleTrigger, scheduleCron, pendingRestore);
 	}
 
 	public BackupSettings withRestoreDelaySeconds(long seconds) {
-		return new BackupSettings(scheduleEnabled, intervalMinutes, backupsToKeep, backupDirectory, stopAfterRestore, clearRequiresConfirm, scheduleWarningEnabled, scheduleWarningSeconds, restoreDelayEnabled, seconds, language, scheduleMode, scheduleTrigger, scheduleCron, pendingRestore);
+		return new BackupSettings(scheduleEnabled, intervalMinutes, backupsToKeep, backupDirectory, stopAfterRestore, cleanupRequiresConfirm, scheduleWarningEnabled, scheduleWarningSeconds, restoreDelayEnabled, seconds, language, scheduleMode, scheduleTrigger, scheduleCron, pendingRestore);
 	}
 
 	public BackupSettings withLanguage(String language) {
-		return new BackupSettings(scheduleEnabled, intervalMinutes, backupsToKeep, backupDirectory, stopAfterRestore, clearRequiresConfirm, scheduleWarningEnabled, scheduleWarningSeconds, restoreDelayEnabled, restoreDelaySeconds, language, scheduleMode, scheduleTrigger, scheduleCron, pendingRestore);
+		return new BackupSettings(scheduleEnabled, intervalMinutes, backupsToKeep, backupDirectory, stopAfterRestore, cleanupRequiresConfirm, scheduleWarningEnabled, scheduleWarningSeconds, restoreDelayEnabled, restoreDelaySeconds, language, scheduleMode, scheduleTrigger, scheduleCron, pendingRestore);
 	}
 
 	public BackupSettings withScheduleMode(String scheduleMode) {
-		return new BackupSettings(scheduleEnabled, intervalMinutes, backupsToKeep, backupDirectory, stopAfterRestore, clearRequiresConfirm, scheduleWarningEnabled, scheduleWarningSeconds, restoreDelayEnabled, restoreDelaySeconds, language, scheduleMode, scheduleTrigger, scheduleCron, pendingRestore);
+		return new BackupSettings(scheduleEnabled, intervalMinutes, backupsToKeep, backupDirectory, stopAfterRestore, cleanupRequiresConfirm, scheduleWarningEnabled, scheduleWarningSeconds, restoreDelayEnabled, restoreDelaySeconds, language, scheduleMode, scheduleTrigger, scheduleCron, pendingRestore);
 	}
 
 	public BackupSettings withScheduleCron(String scheduleCron) {
-		return new BackupSettings(scheduleEnabled, intervalMinutes, backupsToKeep, backupDirectory, stopAfterRestore, clearRequiresConfirm, scheduleWarningEnabled, scheduleWarningSeconds, restoreDelayEnabled, restoreDelaySeconds, language, scheduleMode, "cron", scheduleCron, pendingRestore);
+		return new BackupSettings(scheduleEnabled, intervalMinutes, backupsToKeep, backupDirectory, stopAfterRestore, cleanupRequiresConfirm, scheduleWarningEnabled, scheduleWarningSeconds, restoreDelayEnabled, restoreDelaySeconds, language, scheduleMode, "cron", scheduleCron, pendingRestore);
 	}
 
 	public BackupSettings withPendingRestore(String backupName) {
-		return new BackupSettings(scheduleEnabled, intervalMinutes, backupsToKeep, backupDirectory, stopAfterRestore, clearRequiresConfirm, scheduleWarningEnabled, scheduleWarningSeconds, restoreDelayEnabled, restoreDelaySeconds, language, scheduleMode, scheduleTrigger, scheduleCron, backupName);
+		return new BackupSettings(scheduleEnabled, intervalMinutes, backupsToKeep, backupDirectory, stopAfterRestore, cleanupRequiresConfirm, scheduleWarningEnabled, scheduleWarningSeconds, restoreDelayEnabled, restoreDelaySeconds, language, scheduleMode, scheduleTrigger, scheduleCron, backupName);
 	}
 
 	public BackupSettings withoutPendingRestore() {
@@ -89,8 +89,8 @@ public record BackupSettings(
 		return stopAfterRestore == null || stopAfterRestore;
 	}
 
-	public boolean shouldConfirmBeforeClear() {
-		return clearRequiresConfirm == null || clearRequiresConfirm;
+	public boolean shouldConfirmBeforeCleanup() {
+		return cleanupRequiresConfirm == null || cleanupRequiresConfirm;
 	}
 
 	public boolean shouldWarnBeforeScheduledBackup() {

@@ -53,7 +53,7 @@ public final class BackupCommand {
 			.executes(BackupCommand::menu)
 			.then(literal("start").executes(BackupCommand::createBackup))
 			.then(literal("list").executes(BackupCommand::listBackups))
-			.then(literal("clear")
+			.then(literal("cleanup")
 				.executes(BackupCommand::clearBackups)
 				.then(literal("confirm").executes(BackupCommand::confirmClearBackups)))
 			.then(literal("restore")
@@ -95,9 +95,9 @@ public final class BackupCommand {
 					.then(literal("off").executes(context -> setRestoreDelayEnabled(context, false)))
 					.then(literal("time")
 						.then(argument("duration", StringArgumentType.word()).executes(BackupCommand::setRestoreDelayTime))))
-				.then(literal("clear-confirm")
-					.then(literal("on").executes(context -> setClearRequiresConfirm(context, true)))
-					.then(literal("off").executes(context -> setClearRequiresConfirm(context, false))))
+				.then(literal("cleanup-confirm")
+					.then(literal("on").executes(context -> setCleanupRequiresConfirm(context, true)))
+					.then(literal("off").executes(context -> setCleanupRequiresConfirm(context, false))))
 				.then(literal("language")
 					.then(argument("language", StringArgumentType.word())
 						.suggests(LANGUAGE_SUGGESTIONS)
@@ -149,7 +149,7 @@ public final class BackupCommand {
 			BackupManager manager = BetterBackupsMod.manager();
 			settings = manager.loadSettings();
 			manager.requireCanClearBackups();
-			if (!settings.shouldConfirmBeforeClear()) {
+			if (!settings.shouldConfirmBeforeCleanup()) {
 				return deleteBackups(context);
 			}
 
@@ -160,7 +160,7 @@ public final class BackupCommand {
 			}
 
 			MutableComponent message = BackupMessenger.warningText(settings, "clear.confirm", count, pluralizeBackup(settings, count));
-			message.append(BackupMessenger.commandButton(settings, "button.confirm", "/backup clear confirm", "clear.confirm.hover"));
+			message.append(BackupMessenger.commandButton(settings, "button.confirm", "/backup cleanup confirm", "clear.confirm.hover"));
 			BackupMessenger.line(context.getSource(), message);
 			return count;
 		} catch (Exception exception) {
@@ -272,7 +272,7 @@ public final class BackupCommand {
 						.append(BackupMessenger.commandButton(settings, "menu.restore", "/backup restore " + entry.name(), "menu.restore.hover")));
 				}
 			}
-			BackupMessenger.line(context.getSource(), BackupMessenger.commandButton(settings, "menu.clear", "/backup clear", "menu.clear.hover")
+			BackupMessenger.line(context.getSource(), BackupMessenger.commandButton(settings, "menu.clear", "/backup cleanup", "menu.clear.hover")
 				.append(space())
 				.append(BackupMessenger.commandButton(settings, "menu.back", "/backup menu", "menu.back.hover")));
 			return Math.max(1, entries.size());
@@ -326,7 +326,7 @@ public final class BackupCommand {
 			BackupMessenger.item(context.getSource(), configToggle(settings, "config.stopAfterRestore", settings.shouldStopAfterRestore(), "/backup set stop-after-restore on", "/backup set stop-after-restore off"));
 			BackupMessenger.item(context.getSource(), configToggle(settings, "config.restoreDelay", settings.shouldDelayRestore(), "/backup set restore-delay on", "/backup set restore-delay off"));
 			BackupMessenger.item(context.getSource(), configSuggest(settings, "config.restoreDelayTime", BackupTranslations.formatSeconds(settings.language(), settings.restoreDelaySeconds()), "/backup set restore-delay time " + settings.restoreDelaySeconds() + "s"));
-			BackupMessenger.item(context.getSource(), configToggle(settings, "config.clearConfirm", settings.shouldConfirmBeforeClear(), "/backup set clear-confirm on", "/backup set clear-confirm off"));
+			BackupMessenger.item(context.getSource(), configToggle(settings, "config.cleanupConfirm", settings.shouldConfirmBeforeCleanup(), "/backup set cleanup-confirm on", "/backup set cleanup-confirm off"));
 			BackupMessenger.item(context.getSource(), configChoice(settings, "config.language", settings.language(), settings.language().equals("zh_cn") ? "/backup set language en_us" : "/backup set language zh_cn", settings.language().equals("zh_cn") ? "menu.useEnglish" : "menu.useChinese"));
 			BackupMessenger.line(context.getSource(), BackupMessenger.commandButton(settings, "menu.refresh", "/backup menu config", "menu.refresh.hover")
 				.append(space())
@@ -349,8 +349,8 @@ public final class BackupCommand {
 		BackupMessenger.item(context.getSource(), BackupHelp.runnable(settings, "/backup start", "help.start.description"));
 		BackupMessenger.item(context.getSource(), BackupHelp.runnable(settings, "/backup menu", "help.menu.description"));
 		BackupMessenger.item(context.getSource(), BackupHelp.runnable(settings, "/backup list", "help.list.description"));
-		BackupMessenger.item(context.getSource(), BackupHelp.runnable(settings, "/backup clear", "help.clear.description"));
-		BackupMessenger.item(context.getSource(), BackupHelp.editable(settings, "/backup clear confirm", "/backup clear confirm", "help.clearConfirmCommand.description"));
+		BackupMessenger.item(context.getSource(), BackupHelp.runnable(settings, "/backup cleanup", "help.clear.description"));
+		BackupMessenger.item(context.getSource(), BackupHelp.editable(settings, "/backup cleanup confirm", "/backup cleanup confirm", "help.cleanupConfirmCommand.description"));
 		BackupMessenger.item(context.getSource(), BackupHelp.editable(settings, "/backup restore <backup>", "/backup restore ", "help.restore.description"));
 		BackupMessenger.item(context.getSource(), BackupHelp.runnable(settings, "/backup restore cancel", "help.restoreCancel.description"));
 
@@ -370,7 +370,7 @@ public final class BackupCommand {
 		BackupMessenger.item(context.getSource(), BackupHelp.editable(settings, "/backup set stop-after-restore on|off", "/backup set stop-after-restore ", "help.stopAfterRestore.description"));
 		BackupMessenger.item(context.getSource(), BackupHelp.editable(settings, "/backup set restore-delay on|off", "/backup set restore-delay ", "help.restoreDelay.description"));
 		BackupMessenger.item(context.getSource(), BackupHelp.editable(settings, "/backup set restore-delay time <duration>", "/backup set restore-delay time ", "help.restoreDelayTime.description"));
-		BackupMessenger.item(context.getSource(), BackupHelp.editable(settings, "/backup set clear-confirm on|off", "/backup set clear-confirm ", "help.clearConfirm.description"));
+		BackupMessenger.item(context.getSource(), BackupHelp.editable(settings, "/backup set cleanup-confirm on|off", "/backup set cleanup-confirm ", "help.cleanupConfirm.description"));
 		BackupMessenger.item(context.getSource(), BackupHelp.editable(settings, "/backup set language <language>", "/backup set language ", "help.language.description"));
 		return 1;
 	}
@@ -531,10 +531,10 @@ public final class BackupCommand {
 		}
 	}
 
-	private static int setClearRequiresConfirm(CommandContext<CommandSourceStack> context, boolean enabled) {
+	private static int setCleanupRequiresConfirm(CommandContext<CommandSourceStack> context, boolean enabled) {
 		BackupSettings settings = loadSettingsOrDefault(BetterBackupsMod.manager());
 		try {
-			BetterBackupsMod.manager().setClearRequiresConfirm(enabled);
+			BetterBackupsMod.manager().setCleanupRequiresConfirm(enabled);
 			settings = BetterBackupsMod.manager().loadSettings();
 			BackupMessenger.success(context.getSource(), settings, enabled ? "clear.confirmEnabled" : "clear.confirmDisabled", true);
 			return 1;
@@ -582,7 +582,7 @@ public final class BackupCommand {
 			BackupMessenger.item(context.getSource(), BackupMessenger.label(settings, "config.stopAfterRestore").append(onOff(settings, settings.shouldStopAfterRestore())));
 			BackupMessenger.item(context.getSource(), BackupMessenger.label(settings, "config.restoreDelay").append(onOff(settings, settings.shouldDelayRestore())));
 			BackupMessenger.item(context.getSource(), BackupMessenger.label(settings, "config.restoreDelayTime").append(BackupMessenger.value(BackupTranslations.formatSeconds(settings.language(), settings.restoreDelaySeconds()))));
-			BackupMessenger.item(context.getSource(), BackupMessenger.label(settings, "config.clearConfirm").append(onOff(settings, settings.shouldConfirmBeforeClear())));
+			BackupMessenger.item(context.getSource(), BackupMessenger.label(settings, "config.cleanupConfirm").append(onOff(settings, settings.shouldConfirmBeforeCleanup())));
 			BackupMessenger.item(context.getSource(), BackupMessenger.label(settings, "config.language").append(BackupMessenger.value(settings.language())));
 			BackupMessenger.item(context.getSource(), BackupMessenger.label(settings, "config.backupFolder").append(BackupMessenger.value(manager.resolveBackupDirectory(settings).toString())));
 			if (!settings.pendingRestore().isBlank()) {

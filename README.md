@@ -27,7 +27,7 @@ All commands require server owner permission.
 /backup list               Show available backups.
 /backup restore <backup>   Restore a backup.
 /backup restore cancel     Cancel a pending restore.
-/backup clear              Delete all backups after confirmation.
+/backup cleanup            Delete all backups after confirmation.
 /backup status             Show current backup status.
 /backup config             Show current config.
 /backup help               Show command help.
