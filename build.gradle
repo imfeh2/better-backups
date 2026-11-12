@@ -73,7 +73,7 @@ modrinth {
 	versionName = "Better Backups ${project.version}"
 	versionType = "release"
 	uploadFile = tasks.jar
-	gameVersions = [project.minecraft_version]
+	gameVersions = ["26.1", "26.1.1", "26.1.2", "26.2", "26.3"]
 	loaders = ["fabric"]
 	changelog = "See the GitHub release notes for changes."
 	syncBodyFrom = rootProject.file("README.md").text
